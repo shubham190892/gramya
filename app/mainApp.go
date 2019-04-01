@@ -63,6 +63,6 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 func server() {
 	port := ":8383"
 	http.HandleFunc("/", defaultHandler)
-	fmt.Printf("Http server listening at %s", port)
+	fmt.Printf("Http server listening at %s\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }

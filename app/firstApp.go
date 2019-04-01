@@ -4,15 +4,51 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"go.uber.org/zap"
 	"html"
 	"log"
 	"net/http"
 )
 
 func main() {
-	server1()
+	defer func() {
+		r := recover()
+		if r != nil {
+			fmt.Printf("Recovering in Main\n")
+		}
+	}()
+	fmt.Printf("Calling main\n")
+	A()
 }
+func A() {
+	fmt.Printf("Calling A\n")
+	B()
+}
+func B() {
+	fmt.Printf("Calling B\n")
+	C()
+}
+func C() {
+	defer func() {
+		r := recover()
+		if r != nil {
+			fmt.Printf("Recovering in C\n")
+			panic("C-error")
+		}
+	}()
+	fmt.Printf("Calling C\n")
+	D()
+}
+func D() {
 
+	fmt.Printf("Calling D\n")
+	E()
+
+}
+func E() {
+	fmt.Printf("Calling E\n")
+	panic("E-error")
+}
 func server1() {
 	defaultHandler := func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Default, %q", html.EscapeString(r.URL.Path))
@@ -53,4 +89,5 @@ func insert(db sql.DB) {
 		}
 	}
 	fmt.Printf("\nDone")
+	zap.Config{}.B
 }
