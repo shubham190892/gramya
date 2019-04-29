@@ -1,16 +1,13 @@
-package config
+package utils
 
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var logger *zap.Logger
+var Logger *zap.Logger
 
-func GetLogger() *zap.Logger {
-	if logger != nil {
-		return logger
-	}
+func init() {
 	cfg := zap.Config{
 		Encoding: "json",
 		EncoderConfig: zapcore.EncoderConfig{
@@ -34,5 +31,5 @@ func GetLogger() *zap.Logger {
 	if err != nil {
 		panic(err)
 	}
-	return zapLogger
+	Logger = zapLogger
 }

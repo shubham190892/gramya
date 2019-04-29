@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"gramya/constants"
 	"gramya/model"
+	"gramya/utils"
 	"gramya/web"
 	"log"
 	"net/http"
@@ -29,14 +31,21 @@ func handleGet(w http.ResponseWriter, r *http.Request) Response {
 
 func handlePost(w http.ResponseWriter, r *http.Request) Response {
 	switch r.URL.Path {
-	case "/gramya/testPost":
-		return Response{200, nil, []byte("Post Test OK")}
+	case "/gramya/welcome":
+		return web.Welcome(r)
 	default:
-		return Response{404, nil, []byte("")}
+		return Response{Status: 404, Headers: nil, Data: []byte("")}
 	}
 }
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if rc := recover(); rc != nil {
+			utils.Logger.Error(rc.(error).Error())
+			w.WriteHeader(200)
+			_, _ = w.Write([]byte("Unexpected Server Error"))
+		}
+	}()
 	var res Response
 
 	switch r.Method {
@@ -53,6 +62,10 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 		for k, v := range res.Headers {
 			w.Header().Set(k, v)
 		}
+	}
+
+	if len(w.Header().Get(constants.ContentType)) == 0 {
+		w.Header().Set(constants.ContentType, "application/json")
 	}
 	_, err := w.Write(res.Data)
 	if err != nil {
