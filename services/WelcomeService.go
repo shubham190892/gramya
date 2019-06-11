@@ -19,3 +19,7 @@ func AddPerson(wc model.WelcomeRequest) bool {
 	}
 	return ap && ar
 }
+
+func Expander(id string) {
+
+}
